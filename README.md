@@ -1,46 +1,96 @@
-# Getting Started with Create React App
+# PostMaker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React Single Page Application (SPA) designed for small producers to create professional social media posts using AI assistance powered by Google Gemini API.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### ✨ CustomizationSection
+- Edit text content (name, description, slogan)
+- Upload product image or brand logo
+- Change main color with preset palette
+- AI-powered slogan and context generation using Google Gemini
 
-### `npm start`
+### 👀 PreviewSection
+- Live preview (with history)
+- Real-time updates as you customize
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Tech Stack
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- **React 18** with TypeScript
+- **TailwindCSS** for responsive styling
+- **Google Gemini AI** for content generation
+- **Functional components** with React hooks
+- **Persistent state** using localStorage to save customization data between sessions
 
-### `npm test`
+## Setup Instructions
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 1. Install Dependencies
 
-### `npm run build`
+```bash
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 2. Configure Environment Variables
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Create a `.env` file in the root directory:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```env
+REACT_APP_GEMINI_API_KEY=your_gemini_api_key_here
+REACT_APP_GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
+```
 
-### `npm run eject`
+### 3. Get Google Gemini API Key
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Create a new API key
+3. Add it to your `.env` file
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 4. Start Development Server
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+npm start
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+The application will open at `http://localhost:3000`
 
-## Learn More
+### 5. Build for Production
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Project Structure
+
+```
+src/
+├── components/          # React components
+│   ├── CustomizationSection.tsx
+├── hooks/              # Custom React hooks
+│   └── useGemini.ts
+├── types/              # TypeScript interfaces
+│   └── index.ts
+└── App.tsx             # Main application component
+```
+
+## Future Enhancements
+
+- **Background removal**: Implement actual background removal for product images
+- **Batch processing**: Process multiple products at once
+- **Social media integration**: Direct posting to social platforms
+- **Image cropping and resizing**: More control over image dimensions
+- **Internationalization (i18n)**: Support for multiple languages
+
+## API Integration
+
+The application integrates with Google Gemini AI for:
+- Slogan generation based on product information
+- Contextual ideas for marketing posts
+- Context-aware marketing copy
+
+## Contributing
+
+This is a freelance project template. For modifications or enhancements, please follow React and TypeScript best practices.
+
+## License
+
+This project is created for small producers and businesses. Feel free to customize according to your needs.
