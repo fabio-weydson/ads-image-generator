@@ -80,12 +80,17 @@ src/
 - **Image cropping and resizing**: More control over image dimensions
 - **Internationalization (i18n)**: Support for multiple languages
 
+## Next development steps
+- Improve error handling and user feedback
+- Enhance UI/UX for better user experience and responsiveness
+- Move to a backend service for API calls to secure the API key and handle larger requests
+
 ## API Integration
 
 The application integrates with Google Gemini AI for:
 - Slogan generation based on product information
-- Contextual ideas for marketing posts
-- Context-aware marketing copy
+- Contextual ideas for marketing ad images
+- Context-aware prompt generation for image creation
 
 ## Contributing
 
