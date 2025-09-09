@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { CustomizationData, ProductData } from '../types';
 import { useGemini } from '../hooks/useGemini';
 
