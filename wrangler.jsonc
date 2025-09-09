@@ -1,6 +1,8 @@
 {
-    "compatibility_date": "2024-06-01",
-    "name": "ad-image-maker",
-    "main": "src/index.tsx",
-    "workers_dev": true
+  "name": "ad-image-maker",
+  "compatibility_date": "2025-04-23",
+  "assets": {
+    "directory": "build",
+    "not_found_handling": "single-page-application"
+  }
 }
