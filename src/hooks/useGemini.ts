@@ -6,7 +6,7 @@ export const useGemini = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const generateContent = useCallback(async (prompt: string, inlineData?: string): Promise<{ generatedText: string | null; generatedImage: string | null; } | null> => {
+  const generateContent = useCallback(async (prompt: string, inlineData?: string): Promise<{ generatedImage: string; generatedText: string; } | null> => {
     setLoading(true);
     setError(null);
 
@@ -46,13 +46,12 @@ export const useGemini = () => {
 
       if (!response.ok) {
         const { error: errorData } = await response.json();
-        console.log('Gemini API Error Response:', errorData);
         throw new Error(`API Error: ${errorData.code} - ${errorData.message.split('.')[0] || 'Unknown error'}`);
       }
 
       const data: GeminiResponse = await response.json();
-      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || null;
-      const generatedImage = data.candidates[0].content.parts.find(part => part.inlineData && part.inlineData.mimeType.startsWith('image/'))?.inlineData?.data || null;
+      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const generatedImage = data.candidates[0].content.parts.find(part => part.inlineData && part.inlineData.mimeType.startsWith('image/'))?.inlineData?.data || '';
 
       return { generatedText, generatedImage };
 
@@ -83,7 +82,7 @@ export const useGemini = () => {
     return generateContent(prompt).then(result => result ? result.generatedText : null);
   }, [generateContent]);
 
-  const generateImagePostFromImage = useCallback(async (customizationData: CustomizationData): Promise<string | null> => {
+  const generateImagePostFromImage = useCallback(async (customizationData: CustomizationData): Promise<{ image: string; text: string; } | null> => {
     const prompt = `Create an image using the exact product from this image attached. 
     Keep the product fidelity to the original image do no change anything in the product package or label. 
     ${customizationData.focusOnProduct ? `The product should be in foregroung and in the ${customizationData.productPosition || "center"} of the image.` : ""}
@@ -95,11 +94,14 @@ export const useGemini = () => {
     The product should occupy around ${customizationData.zoomLevel ? (customizationData.zoomLevel * 100).toFixed(0) : "70"}% of the image area.
     ${customizationData.mainColor ? "The most used color the scene should be " + customizationData.mainColor + " with a prominence of 20% over other colors." : ""}
     The context is: "${customizationData.context || "use your creativity based on the product slogan:" + customizationData.slogan}". 
-    Make it visually appealing and relevant to the context. No text, only image.`;
+    Make it visually appealing and relevant to the context. No text, only image.
+    If any error or the image is not clear, respond with a short message in casual tone explaining the issue instead of an image.
+    Use the same language of the product description to respond.
+    `;
 
     const negativePrompt = `Do not include any text, watermarks, or logos in the image. Avoid using generic or unrelated backgrounds. Do not alter the product's appearance or packaging.`;
-    
-    return generateContent(`${prompt} ${negativePrompt}`, customizationData.imageUrl).then(result => result ? result.generatedImage : null);
+
+    return generateContent(`${prompt} \n ${negativePrompt}`, customizationData.imageUrl).then(result => result ? { image: result.generatedImage, text: result.generatedText } : null);
   }, [generateContent]);
 
   return {
