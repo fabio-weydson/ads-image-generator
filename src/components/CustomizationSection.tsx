@@ -79,9 +79,10 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
   };
 
   const handleGenerateSceneIdeas = async () => {
-    const { name: productName, description: productDescription } = productData;
-    if (productName && productDescription) {
-      const generatedContext = await generateContextForScene(productName, productDescription);
+    handleInputChange('context', '');
+    setContextIdeas([]);
+    if (productData.name && productData.description) {
+      const generatedContext = await generateContextForScene(productData, customizationData);
       if (generatedContext) {
         setContextIdeas(generatedContext.split(';').map(idea => idea.trim()));
       }
@@ -90,7 +91,6 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
 
   const handleGeneratePostsImageFromImage = async (customizationData: CustomizationData) => {
     if (customizationData.imageUrl) {
-
       const generatedPost = await generateImagePostFromImage(customizationData);
       if (generatedPost) {
         handleInputChange('resultImages', [ generatedPost, ...(customizationData.resultImages || []) ]);
@@ -167,88 +167,38 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
           />
         </div>
 
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Context for the scene
-            </label>
-            <button
-                type="button"
-                onClick={handleGenerateSceneIdeas}
-                className="text-sm text-blue-500 hover:underline flex items-center space-x-1"
-              >
-                {loading ? <>
-                        <svg className="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <span>Generating...</span>
-                      </>
-                      : <>
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                          </svg>
-                          Generate contexts ideas
-                        </> 
-                }
-            </button>
-            
-            </div>
+
+         <div className="grid grid-cols-4 md:grid-cols-4 gap-4">
             <div>
-              {loading ? (
-                <span>Generating...</span>
-              ) : (
-                contextIdeas.length > 0 && (
-                  <div className="block mt-1 text-sm text-gray-600">
-                    <strong>Ideas: </strong> (click to select)
-                    <ul className="list-disc list-inside m-3">
-                      {contextIdeas.map((idea, idx) => (
-                        <li className='cursor-pointer hover:text-blue-500' key={idx} onClick={() => handleInputChange('context', idea)}>{idea}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )
-              )}
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Focus on Product
+              </label>
+              <select
+                value={customizationData.focusOnProduct ? 'yes' : 'no'}
+                onChange={(e) => handleInputChange('focusOnProduct', e.target.value === 'yes')}
+                className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
             </div>
-            <textarea
-              value={customizationData.context}
-              onChange={(e) => handleInputChange('context', e.target.value)}
-              placeholder="Describe the scene or context for the image..."
-              rows={2}
-              className="w-full px-3 py-2 border border-gray-300 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
-            />
-        </div>
-
-
-        <div className="grid grid-cols-4 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Focus on Product
-            </label>
-            <select
-              value={customizationData.focusOnProduct ? 'yes' : 'no'}
-              onChange={(e) => handleInputChange('focusOnProduct', e.target.value === 'yes')}
-              className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
-            </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Product Zoom Level: {((customizationData.zoomLevel || 0.5) * 100).toFixed(0)}%
-            </label>
-            <input
-              type="range"
-              min="0.1"
-              max="1"
-              step="0.1"
-              value={customizationData.zoomLevel || 0.5}
-              onChange={(e) => handleInputChange('zoomLevel', e.target.value)}
-              className="w-full mt-3"
-            />
-          </div>
+            <>
             {customizationData.focusOnProduct &&
               <>
+              <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Product Zoom Level: {((customizationData.zoomLevel || 0.5) * 100).toFixed(0)}%
+                  </label>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="1"
+                    step="0.1"
+                    value={customizationData.zoomLevel || 0.5}
+                    onChange={(e) => handleInputChange('zoomLevel', e.target.value)}
+                    className="w-full mt-3"
+                  />
+              </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Product Position
@@ -291,7 +241,77 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
               </div>
             </>
           }
+          {!customizationData.focusOnProduct && 
+            <div className="">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Use people in the scene
+              </label>
+              <select
+                value={customizationData?.usePeople ? 'yes' : 'no'}
+                onChange={(e) => handleInputChange('usePeople', (e.target.value === 'yes'))}
+                className="w-full px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+            </div>
+          }
+         </>
         </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Context for the scene
+            </label>
+            <button
+                type="button"
+                onClick={handleGenerateSceneIdeas}
+                className="text-sm text-blue-500 hover:underline flex items-center space-x-1"
+              >
+                {loading ? <>
+                        <svg className="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span>Generating...</span>
+                      </>
+                      : <>
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          Generate contexts ideas
+                        </> 
+                }
+            </button>
+            
+            </div>
+            <div>
+              {loading ? (
+                <span className="text-gray-500 text-sm">Please wait...</span>
+              ) : (
+                contextIdeas.length > 0 && (
+                  <div className="block mt-1 text-sm text-gray-600">
+                    <strong>Ideas: </strong> (click to select)
+                    <ul className="list-disc list-inside m-3">
+                      {contextIdeas.map((idea, idx) => (
+                        <li className='cursor-pointer hover:text-blue-500' key={idx} onClick={() => handleInputChange('context', idea)}>{idea}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )
+              )}
+            </div>
+            <textarea
+              value={customizationData.context}
+              onChange={(e) => handleInputChange('context', e.target.value)}
+              placeholder="Describe the scene or context for the image..."
+              rows={2}
+              className="w-full px-3 py-2 border border-gray-300 bg-gray-50 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+            />
+        </div>
+
+
+       
         <div>
          
           {showColorPicker && (

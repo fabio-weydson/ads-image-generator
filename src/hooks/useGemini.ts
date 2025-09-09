@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { GeminiResponse } from '../types';
+import { GeminiResponse, ProductData } from '../types';
 import { CustomizationData } from '../types';
 
 export const useGemini = () => {
@@ -71,8 +71,15 @@ export const useGemini = () => {
     return generateContent(prompt).then(result => result ? result.generatedText : null);
   }, [generateContent]);
 
-  const generateContextForScene = useCallback(async (productName: string, description: string): Promise<string | null> => {
-    const prompt = `Create 4 scripts for a scene to be used in a promotional image for a product called "${productName}" with description: "${description}". Each script should be a single sentence describing a visually appealing setting or scenario that highlights the product's features or usage. Avoid mentioning the product directly. Answer just the scripts as response, separated by semicolons.`;
+  const generateContextForScene = useCallback(async (product: ProductData, customization: CustomizationData): Promise<string | null> => {
+    const prompt = `Create 4 scripts for a scene to be used in a promotional image for a product called "${product.name}" with description: "${product.description}". 
+    The product slogan is: "${customization.slogan}".
+    ${customization.mainColor ? `The main color to be used in the scene is: ${customization.mainColor}.` : ""}
+    ${customization.focusOnProduct ? `The product should be in foregroung and in the ${customization.productPosition || "center"} of the image.` : ""}
+    ${customization.usePeople && customization.focusOnProduct ? "Include people in the scene interacting naturally with the product." : "Do not include people in the scene."} 
+    Each script should be a single sentence describing a visually appealing setting or scenario that highlights the product's features or usage. 
+    Answer just the scripts as response, separated by semicolons.`;
+
     return generateContent(prompt).then(result => result ? result.generatedText : null);
   }, [generateContent]);
 
@@ -80,10 +87,15 @@ export const useGemini = () => {
     const prompt = `Create an image using the exact product from this image attached. 
     Keep the product fidelity to the original image do no change anything in the product package or label. 
     ${customizationData.focusOnProduct ? `The product should be in foregroung and in the ${customizationData.productPosition || "center"} of the image.` : ""}
+    ${customizationData.usePeople && customizationData.focusOnProduct ? "Include people in the scene interacting naturally with the product." : "Do not include people in the scene."} 
+    The style should be photorealistic, high quality, and suitable for social media advertising. 
+    The image should have a resolution of 1024x1024 pixels and be in PNG format. 
+    The background should be clean and uncluttered, ensuring the product stands out clearly. 
+    Use natural lighting to enhance the product's features and make it visually appealing.
     The product should occupy around ${customizationData.zoomLevel ? (customizationData.zoomLevel * 100).toFixed(0) : "70"}% of the image area.
     ${customizationData.mainColor ? "The most used color the scene should be " + customizationData.mainColor + " with a prominence of 20% over other colors." : ""}
     The context is: "${customizationData.context || "use your creativity based on the product slogan:" + customizationData.slogan}". 
-    Make it visually appealing and relevant to the context. No text response, only image.`;
+    Make it visually appealing and relevant to the context. No text, only image.`;
 
     const negativePrompt = `Do not include any text, watermarks, or logos in the image. Avoid using generic or unrelated backgrounds. Do not alter the product's appearance or packaging.`;
     

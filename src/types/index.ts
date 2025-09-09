@@ -15,6 +15,7 @@ export interface CustomizationData {
   focusOnProduct?: boolean;
   zoomLevel?: number;
   productPosition?: 'center'| 'center-left' | 'center-right' | 'left-bottom' | 'right-bottom' | 'left-top' | 'right-top';
+  usePeople: boolean;
 }
 
 export interface GeminiResponse {
