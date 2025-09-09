@@ -225,7 +225,7 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
               <div>
                 <div className="block items-center">
                   <label className="block text-sm font-medium text-gray-700">
-                    Main Color
+                    Main Color <i className='text-gray-500'>(optional)</i>
                   </label>
                   <div className="flex items-center space-x-2">
                     <div
