@@ -1,7 +1,0 @@
-{
-    "compatibility_date": "2024-06-01",
-    "name": "post-maker",
-    "main": "src/index.tsx",
-    "type": "javascript",
-    "workers_dev": true
-}
