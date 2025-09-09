@@ -24,6 +24,7 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const { generateSlogan, generateImagePostFromImage, generateContextForScene, loading, error } = useGemini();
   const [contextIdeas, setContextIdeas] = useState<string[]>([]);
+  const [info, setInfo] = useState<string>('');
 
   const [productData, setProductData] = useState<ProductData>({
     name: '',
@@ -57,7 +58,7 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
         }
       })
       .catch((err) => {
-        console.error('Upload error:', err);
+        setInfo('Failed to upload image. Please try again.');
       });
   };
 
@@ -90,11 +91,14 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
   }
 
   const handleGeneratePostsImageFromImage = async (customizationData: CustomizationData) => {
+    setInfo('');
     if (customizationData.imageUrl) {
       const generatedPost = await generateImagePostFromImage(customizationData);
-      if (generatedPost) {
-        handleInputChange('resultImages', [ generatedPost, ...(customizationData.resultImages || []) ]);
+      if (!generatedPost) return;
+      if (generatedPost.image) {
+        return handleInputChange('resultImages', [ generatedPost.image, ...(customizationData.resultImages || []) ]);
       }
+      setInfo(generatedPost.text);
     }
   };
 
@@ -261,7 +265,7 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-md font-medium text-gray-700">
               Context for the scene
             </label>
             <button
@@ -335,7 +339,7 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Image file
+            Input Image file
           </label>
           <input
             type="file"
@@ -378,6 +382,7 @@ export const CustomizationSection: React.FC<CustomizationSectionProps> = ({
           <div className="space-y-3">
             <div className="flex items-center justify-center space-x-2">
               <div className="text-sm text-gray-800">
+                {info && <div className="mb-2 p-2 bg-blue-50 border border-blue-200 text-blue-800 rounded">{info}</div>}
                 {customizationData.resultImages?.length && customizationData.resultImages.length > 0 ? (
                   <>
                     <div className="flex flex-wrap gap-4 justify-center">
